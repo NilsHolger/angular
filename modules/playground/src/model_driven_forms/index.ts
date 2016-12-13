@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright 2016 Google Inc. All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,13 +15,14 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 
 /**
- * Custom validator.
+ * Custom credit card validator.
  */
-function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
-  if (c.value && /^\d{16}$/.test(c.value)) {
-    return null;
-  } else {
-    return {'invalidCreditCard': true};
+function creditCardValidator(control: AbstractControl): {[key: string]: boolean} {
+  valid: any = {'invalidCreditCard': true}; 
+  if (control.value && /^\d{16}$/.test(control.value)) {
+    valid = {'validCreditCard': true};
+  }
+    return valid;
   }
 }
 
@@ -32,9 +33,8 @@ function creditCardValidator(c: AbstractControl): {[key: string]: boolean} {
  *
  * <show-error control="creditCard" [errors]="['required', 'invalidCreditCard']"></show-error>
  *
- * Will display the "is required" error if the control is empty, and "invalid credit card" if the
- * control is not empty
- * but not valid.
+ * Will display the "is required" error message if the control is empty, and "invalid credit card" message if the
+ * control is not empty and not valid.
  *
  * In a real application, this component would receive a service that would map an error code to an
  * actual error message.
@@ -55,24 +55,24 @@ class ShowError {
   constructor(@Host() formDir: FormGroupDirective) { this.formDir = formDir; }
 
   get errorMessage(): string {
-    const form: FormGroup = this.formDir.form;
-    const control = form.get(this.controlPath);
+    const formGroup: FormGroup = this.formDir.form;
+    const control = formGroup.get(this.controlPath);
     if (control && control.touched) {
       for (let i = 0; i < this.errorTypes.length; ++i) {
         if (control.hasError(this.errorTypes[i])) {
-          return this._errorMessage(this.errorTypes[i]);
+          return this.errorMessage(this.errorTypes[i]);
         }
       }
     }
     return null;
   }
 
-  private _errorMessage(code: string): string {
+  private errorMessage(errorCode: string): string {
     const config: {[key: string]: string} = {
       'required': 'is required',
       'invalidCreditCard': 'is invalid credit card number',
     };
-    return config[code];
+    return config[errorCode];
   }
 }
 
@@ -83,7 +83,7 @@ class ShowError {
   template: `
     <h1>Checkout Form (Reactive)</h1>
 
-    <form (ngSubmit)="onSubmit()" [formGroup]="form" #f="ngForm">
+    <form (ngSubmit)="onSubmit()" [formGroup]="form" #reactiveForm="ngForm">
       <p>
         <label for="firstName">First Name</label>
         <input type="text" id="firstName" formControlName="firstName">
@@ -104,7 +104,7 @@ class ShowError {
       <p>
         <label for="country">Country</label>
         <select id="country" formControlName="country">
-          <option *ngFor="let c of countries" [value]="c">{{c}}</option>
+          <option *ngFor="let country of countries" [value]="country">{{country}}</option>
         </select>
       </p>
 
@@ -132,20 +132,20 @@ class ShowError {
         </textarea>
       </p>
 
-      <button type="submit" [disabled]="!f.form.valid">Submit</button>
+      <button type="submit" [disabled]="!reactiveForm.form.valid">Submit</button>
     </form>
   `
 })
 class ReactiveForms {
-  form: FormGroup;
+  formGroup: FormGroup;
   countries = ['US', 'Canada'];
 
-  constructor(fb: FormBuilder) {
-    this.form = fb.group({
+  constructor(formBuilder: FormBuilder) {
+    this.formGroup = formBuilder.group({
       'firstName': ['', Validators.required],
       'middleName': [''],
       'lastName': ['', Validators.required],
-      'country': ['Canada', Validators.required],
+      'country': ['US', Validators.required],
       'creditCard': ['', Validators.compose([Validators.required, creditCardValidator])],
       'amount': [0, Validators.required],
       'email': ['', Validators.required],
@@ -155,7 +155,7 @@ class ReactiveForms {
 
   onSubmit(): void {
     console.log('Submitting:');
-    console.log(this.form.value);
+    console.log(this.formGroup.value);
   }
 }
 

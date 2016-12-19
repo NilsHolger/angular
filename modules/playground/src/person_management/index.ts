@@ -15,7 +15,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 // services
 
 @Injectable()
-export class DataService {
+class DataService {
   currentPerson: Person;
   persons: Person[];
 
@@ -63,7 +63,7 @@ export class DataService {
     </div>
   `
 })
-export class FullNameComponent {
+class FullNameComponent {
   constructor(private dataService: DataService) {}
   get person(): Person { return this.dataService.currentPerson; }
 }
@@ -92,7 +92,7 @@ export class FullNameComponent {
     </div>
   `
 })
-export class PersonsDetailComponent {
+class PersonsDetailComponent {
   constructor(private dataService: DataService) {}
   get person(): Person { return this.dataService.currentPerson; }
 }
@@ -111,7 +111,7 @@ export class PersonsDetailComponent {
     </div>
   `
 })
-export class PersonsComponent {
+class PersonsComponent {
   persons: Person[];
   constructor(private dataService: DataService) { this.persons = dataService.persons; }
   select(person: Person): void { this.dataService.currentPerson = person; }
@@ -128,7 +128,7 @@ export class PersonsComponent {
     <persons-cmp *ngIf="mode === 'personList'"></persons-cmp>
   `
 })
-export class PersonManagementApplication {
+class PersonManagementApplication {
   mode: string;
   switchToEditName(): void { this.mode = 'editName'; }
   switchToPersonList(): void { this.mode = 'personList'; }
@@ -138,7 +138,7 @@ export class PersonManagementApplication {
 // model
 
 let id = 0;
-export class Person {
+class Person {
   personId: number;
   friends: Person[];
 
@@ -163,7 +163,7 @@ export class Person {
  class ExampleModule {
  }
 
- export function main() {
+function main() {
    platformBrowserDynamic().bootstrapModule(ExampleModule);
  }
 

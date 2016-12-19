@@ -29,11 +29,10 @@ export class DataService {
       new Person('Alex', 'Rickabaugh', 1990), new Person('João', 'Dias', 1991),
       new Person('Alex', 'Eagle', 1992), new Person('Nils', 'Naegele', 1993)
     ];
+    
     for (let i = 0; i < this.persons.length; i++){
-      if (this.persons[i] !== this.persons[i].friends[i]){
         this.persons[i].friends = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(_ => this.persons[_]);
         continue;
-      }
     }
     this.currentPerson = this.persons[0];
   }
@@ -148,7 +147,6 @@ export class Person {
     this.firstName = firstName;
     this.lastName = lastName;
     this.friends = [];
-    console.log(id);
   }
 
   get age(): number { return 2016 - this.yearOfBirth; }
